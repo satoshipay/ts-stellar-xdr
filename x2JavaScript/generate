@@ -1,0 +1,7 @@
+#!/bin/sh
+rm -rf ./generated
+mkdir ./generated
+docker build -t xdr-gen .
+docker run -it \
+	--mount type=bind,source="$(pwd)"/generated,target=/data/src/generated \
+	xdr-gen

@@ -1,0 +1,24 @@
+{
+  "name": "ts-xdr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "download-x": "cd x2JavaScript && ./generate && cd ..",
+    "babel": "rimraf x2JavaScript/commonjs && babel x2JavaScript/generated --out-dir x2JavaScript/commonjs",
+    "build": "node x2JavaScript/commonjs/stellar-xdr_generated.js",
+    "complete": "npm run download-x && npm run babel && npm run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "js-xdr": "file:./js-xdr"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.0",
+    "@babel/core": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "rimraf": "^2.6.2"
+  }
+}

@@ -1,4 +1,4 @@
-FROM ruby:stretch
+FROM ruby:alpine
 
 WORKDIR /data
 

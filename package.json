@@ -7,8 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "download-x": "cd x2JavaScript && ./generate && cd ..",
     "babel": "rimraf x2JavaScript/commonjs && babel x2JavaScript/generated --out-dir x2JavaScript/commonjs",
-    "build": "node x2JavaScript/commonjs/stellar-xdr_generated.js",
-    "complete": "npm run download-x && npm run babel && npm run build"
+    "build": "node x2JavaScript/commonjs/stellar-xdr_generated.js && npm run prettify",
+    "complete": "npm run download-x && npm run babel && npm run build",
+    "prettify": "prettier --write js-xdr/src/test/xdr.ts"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +20,11 @@
     "@babel/cli": "^7.2.0",
     "@babel/core": "^7.2.0",
     "@babel/preset-env": "^7.2.0",
+    "prettier": "^1.15.3",
     "rimraf": "^2.6.2"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "tabWidth": 2
   }
 }

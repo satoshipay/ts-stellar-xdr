@@ -1,3 +1,7 @@
-node_modules
-x2JavaScript/generated
-x2JavaScript/commonjs
+/node_modules
+/js-xdr/node_modules
+/x2JavaScript/generated
+/x2JavaScript/commonjs
+/js-xdr/dist
+/out
+/js-xdr/src/test

@@ -5,3 +5,6 @@
 /js-xdr/dist
 /out
 /js-xdr/src/test
+/generated
+/lib
+/tmp

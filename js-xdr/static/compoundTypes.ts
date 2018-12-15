@@ -1,5 +1,5 @@
-import { XdrBufferedConverter } from './types';
-import { Int } from './basicTypes';
+import { XdrBufferedConverter } from "./types";
+import { Int } from "./basicTypes";
 
 const TWO_TO_32 = 0x100000000;
 

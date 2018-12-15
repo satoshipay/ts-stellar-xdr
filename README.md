@@ -9,7 +9,7 @@
 
 ## Build typescript XDR serializer/deserializer
 ```
-  npm run complete
+  npm run build-complete
 ```
 
 or

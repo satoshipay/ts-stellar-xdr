@@ -1,4 +1,4 @@
-import { WriteStream, ReadStream } from './streams';
+import { WriteStream, ReadStream } from "./streams";
 
 export interface XdrBufferedConverter<T> {
   toXdrBuffered: (value: T, writeStream: WriteStream) => void;

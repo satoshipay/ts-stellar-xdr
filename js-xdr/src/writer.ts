@@ -5,7 +5,7 @@ import { TypeDefinition } from "../types/types";
 
 export function initializeOutputPath(outputPath: string) {
   mkdirSync(outputPath, { recursive: true });
-  mkdirSync(join(outputPath, 'converters'), { recursive: true });
+  mkdirSync(join(outputPath, "converters"), { recursive: true });
 }
 
 export function generateXdrDefinition(types: Record<string, TypeDefinition>, outputPath: string) {
@@ -13,7 +13,7 @@ export function generateXdrDefinition(types: Record<string, TypeDefinition>, out
 
   let toBeDone: string[];
   if (process.env.GENERATE_TYPES) {
-    toBeDone = process.env.GENERATE_TYPES.split(',').map(name => name.trim());
+    toBeDone = process.env.GENERATE_TYPES.split(",").map(name => name.trim());
   } else {
     toBeDone = Object.keys(types); // generate all types
   }
@@ -47,17 +47,10 @@ export function generateXdrDefinition(types: Record<string, TypeDefinition>, out
   writeFileSync(join(outputPath, mainFileName), result);
 }
 
-const staticFiles = [
-  "basicTypes.ts",
-  "compoundTypes.ts",
-  "index.ts",
-  "int64.ts",
-  "streams.ts",
-  "types.ts",
-];
+const staticFiles = ["basicTypes.ts", "compoundTypes.ts", "index.ts", "int64.ts", "streams.ts", "types.ts"];
 
 export function copyStaticFiles(outputPath: string) {
   staticFiles.forEach(fileName => {
-    copyFileSync(join(__dirname, "../../static/", fileName), join(outputPath, 'converters', fileName));
+    copyFileSync(join(__dirname, "../../static/", fileName), join(outputPath, "converters", fileName));
   });
 }

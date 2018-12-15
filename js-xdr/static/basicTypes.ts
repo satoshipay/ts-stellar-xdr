@@ -1,5 +1,5 @@
-import { Int64, Uint64 } from './int64';
-import { XdrBufferedConverter } from './types';
+import { Int64, Uint64 } from "./int64";
+import { XdrBufferedConverter } from "./types";
 
 export const Int: XdrBufferedConverter<number> = {
   toXdrBuffered: (value, writeStream) => {

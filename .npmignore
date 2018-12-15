@@ -1,0 +1,10 @@
+/babel.config.js
+/tsconfig.json
+/tslint.json
+
+/x2JavaScript
+/js-xdr
+
+/node_modules
+/generated
+/test

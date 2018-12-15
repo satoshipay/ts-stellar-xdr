@@ -1,6 +1,6 @@
 {
   "name": "js-xdr",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "dist/src/index.js",
   "scripts": {
@@ -8,8 +8,8 @@
     "build": "rimraf dist && tsc",
     "prettier": "prettier --write static/*.ts && prettier --write src/*.ts"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "SatoshiPay Ltd.",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@types/node": "^10.12.12",
     "prettier": "^1.15.3",

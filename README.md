@@ -23,7 +23,7 @@ This library is consistently 160% faster than the one in stellar-sdk for encodin
 
 env vars
 ```
-GENERATE_TYPES = "TransactionEnvelope, TransactionResult, TransactionMeta"
+GENERATE_TYPES=TransactionEnvelope,TransactionResult,TransactionMeta
 DESTINATION = ./target
 MAIN_FILE_NAME (= xdr.ts)
 ```

@@ -5,10 +5,11 @@ import { TypeDefinition } from "../types/types";
 
 export function initializeOutputPath(outputPath: string) {
   mkdirSync(outputPath, { recursive: true });
+  mkdirSync(join(outputPath, 'converters'), { recursive: true });
 }
 
 export function generateXdrDefinition(types: Record<string, TypeDefinition>, outputPath: string) {
-  let result = `import * as converter from './converter'`;
+  let result = `import * as converter from './converters/index'`;
 
   let toBeDone: string[];
   if (process.env.GENERATE_TYPES) {
@@ -38,14 +39,18 @@ export function generateXdrDefinition(types: Record<string, TypeDefinition>, out
     });
   }
 
-  const mainFileName = process.env.MAIN_FILE_NAME || "xdr.ts";
+  const mainFileName = process.env.MAIN_FILE_NAME;
+  if (!mainFileName) {
+    throw new Error('Environment variable "MAIN_FILE_NAME" not specified');
+  }
+
   writeFileSync(join(outputPath, mainFileName), result);
 }
 
 const staticFiles = [
   "basicTypes.ts",
   "compoundTypes.ts",
-  "converter.ts",
+  "index.ts",
   "int64.ts",
   "streams.ts",
   "types.ts",
@@ -53,6 +58,6 @@ const staticFiles = [
 
 export function copyStaticFiles(outputPath: string) {
   staticFiles.forEach(fileName => {
-    copyFileSync(join(__dirname, "../../static/", fileName), join(outputPath, fileName));
+    copyFileSync(join(__dirname, "../../static/", fileName), join(outputPath, 'converters', fileName));
   });
 }

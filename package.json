@@ -1,6 +1,6 @@
 {
   "name": "ts-stellar-xdr",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Decoder/Encoder of XDR types used in Stellar",
   "main": "./lib/mainTypes.js",
   "types": "./lib/mainTypes.d.ts",
@@ -13,7 +13,7 @@
     "generate-all-types": "DESTINATION=./generated MAIN_FILE_NAME=allTypes.ts node x2JavaScript/commonjs/stellar-xdr_generated.js",
     "build-complete": "npm run download-x && npm run babel && npm run generate && npm run prettier && npm run build",
     "prettier": "prettier --write ./generated/**/*.ts",
-    "build": "tsc --declaration",
+    "build": "rimraf lib && tsc --declaration",
     "prepublishOnly": "npm run build-complete"
   },
   "author": "SatoshiPay Ltd.",

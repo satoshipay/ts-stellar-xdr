@@ -6,12 +6,10 @@
     "module": "commonjs",
     "target": "ES6",
     "strict": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "esModuleInterop": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": [
-    "./generated/**/*"
-  ],
+  "include": ["./generated/**/*"]
 }

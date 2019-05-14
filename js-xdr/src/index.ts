@@ -134,6 +134,10 @@ export function config(definitionFactory: DefinitionFactory) {
     },
 
     lookup: (name: string) => {
+      if (constants.hasOwnProperty(name)) {
+        return constants[name];
+      }
+
       return {
         tsType: name,
         converter: name,

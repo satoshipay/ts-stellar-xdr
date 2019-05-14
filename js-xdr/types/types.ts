@@ -29,7 +29,7 @@ export type DefinitionFactory = (
       unionDefinition: UnionDefinition<NormalArms, DefaultArm>
     ) => void;
     const: (name: string, value: number) => void;
-    lookup: (name: string) => TypeDefinition;
+    lookup: (name: string) => number | TypeDefinition;
     option: (childType: TypeDefinition) => TypeDefinition;
     opaque: (length: number) => TypeDefinition;
     varOpaque: (maxLength?: number) => TypeDefinition;

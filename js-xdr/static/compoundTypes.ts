@@ -203,11 +203,7 @@ export function VarArray<T>(subConverter: XdrBufferedConverter<T>, maxLength: nu
 export function string(maxLength: number = TWO_TO_32 - 1) {
   const converter: XdrBufferedConverter<string> = {
     toXdrBuffered: (value, writeStream) => {
-      if (value.length > maxLength) {
-        throw new Error(`Value too large for string: length = ${value.length}; maximal length = ${maxLength}`);
-      }
-      writeStream.writeNextUint32(value.length);
-      writeStream.writeNextString(value);
+      writeStream.writeNextStringAndLength(value, maxLength);
     },
 
     fromXdrBuffered: readStream => {

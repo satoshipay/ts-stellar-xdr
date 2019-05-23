@@ -1,6 +1,9 @@
 import { Int64, Uint64 } from "../utils/int64";
 import { XdrBufferedConverter } from "./types";
 
+const MIN_INT = -0x80000000;
+const MAX_INT = 0x7fffffff;
+
 export const Int: XdrBufferedConverter<number> = {
   toXdrBuffered: (value, writeStream) => {
     writeStream.writeNextInt32(value);
@@ -8,8 +11,15 @@ export const Int: XdrBufferedConverter<number> = {
 
   fromXdrBuffered: readStream => {
     return readStream.readNextInt32();
+  },
+
+  isValid: value => {
+    return value >= MIN_INT && value <= MAX_INT && isFinite(value) && !isNaN(value);
   }
 };
+
+const MIN_UINT = 0x00000000;
+const MAX_UINT = 0xffffffff;
 
 export const Uint: XdrBufferedConverter<number> = {
   toXdrBuffered: (value, writeStream) => {
@@ -18,6 +28,10 @@ export const Uint: XdrBufferedConverter<number> = {
 
   fromXdrBuffered: readStream => {
     return readStream.readNextUint32();
+  },
+
+  isValid: value => {
+    return value >= MIN_UINT && value <= MAX_UINT && isFinite(value) && !isNaN(value);
   }
 };
 
@@ -31,7 +45,9 @@ export const Hyper: XdrBufferedConverter<Int64> = {
     const high32bit = readStream.readNextInt32();
     const low32bit = readStream.readNextUint32();
     return new Int64(low32bit, high32bit);
-  }
+  },
+
+  isValid: value => true
 };
 
 export const Uhyper: XdrBufferedConverter<Uint64> = {
@@ -44,7 +60,9 @@ export const Uhyper: XdrBufferedConverter<Uint64> = {
     const high32bit = readStream.readNextUint32();
     const low32bit = readStream.readNextUint32();
     return new Uint64(low32bit, high32bit);
-  }
+  },
+
+  isValid: value => true
 };
 
 export const Boolean: XdrBufferedConverter<boolean> = {
@@ -62,10 +80,13 @@ export const Boolean: XdrBufferedConverter<boolean> = {
     }
 
     throw new Error(`Value ${parsedInt} is not a proper Boolean value.`);
-  }
+  },
+
+  isValid: value => true
 };
 
 export const Void: XdrBufferedConverter<undefined> = {
   toXdrBuffered: () => {},
-  fromXdrBuffered: () => undefined
+  fromXdrBuffered: () => undefined,
+  isValid: value => true
 };

@@ -32,6 +32,7 @@ export function generator<T>(factory: () => XdrBufferedConverter<T>): XdrConvert
       return value;
     },
     toXdrBuffered: (value, writeStream) => memoizedFactory().toXdrBuffered(value, writeStream),
-    fromXdrBuffered: readStream => memoizedFactory().fromXdrBuffered(readStream)
+    fromXdrBuffered: readStream => memoizedFactory().fromXdrBuffered(readStream),
+    isValid: value => memoizedFactory().isValid(value)
   };
 }

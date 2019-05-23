@@ -1,5 +1,6 @@
 import { XdrBufferedConverter } from "./types";
 import { Int } from "./basicTypes";
+import { isValidString } from "./streams";
 
 const TWO_TO_32 = 0x100000000;
 
@@ -23,7 +24,9 @@ export function Enum<T extends string>(name: string, enumDefinition: Record<T, n
       }
 
       throw new Error(`Invalid value ${enumValue} when parsing enum ${name}`);
-    }
+    },
+
+    isValid: value => enumDefinition.hasOwnProperty(value)
   };
 
   return converter;
@@ -44,6 +47,13 @@ export function Struct<T>(structDefinition: Array<{ [R in keyof T]: [R, XdrBuffe
         obj[key] = converter.fromXdrBuffered(readStream);
         return obj;
       }, {}) as T;
+    },
+
+    isValid: value => {
+      return structDefinition.every(entry => {
+        const [key, converter] = entry;
+        return converter.isValid(value[key]);
+      });
     }
   };
 
@@ -119,6 +129,35 @@ export function Union<
       } else {
         throw new Error(`Discriminator is ${defaultNumber}, but no default values allowed in union "${name}"`);
       }
+    },
+
+    isValid: value => {
+      if (defaultConverter !== undefined && "default" in value) {
+        if (!Int.isValid(value.default)) {
+          return false;
+        }
+        if (defaultConverter.default !== undefined) {
+          if ("value" in value) {
+            return defaultConverter.default.isValid(value.value);
+          } else {
+            return false;
+          }
+        }
+      } else if ("default" in value) {
+        return false;
+      } else {
+        if (!switchOn.isValid(value.type)) {
+          return false;
+        }
+        const valueConverter = structDefinition[value.type];
+        if (valueConverter !== undefined) {
+          if ("value" in value) {
+            return valueConverter.isValid(value.value);
+          } else {
+            return false;
+          }
+        }
+      }
     }
   };
 
@@ -142,7 +181,9 @@ export function Option<T>(subConverter: XdrBufferedConverter<T>) {
         return undefined;
       }
       return subConverter.fromXdrBuffered(readStream);
-    }
+    },
+
+    isValid: value => value === undefined || subConverter.isValid(value)
   };
 
   return converter;
@@ -166,6 +207,13 @@ export function FixedArray<T>(subConverter: XdrBufferedConverter<T>, length: num
       }
 
       return result;
+    },
+
+    isValid: value => {
+      if (value.length !== length) {
+        return false;
+      }
+      return value.every(entry => subConverter.isValid(entry));
     }
   };
 
@@ -194,6 +242,13 @@ export function VarArray<T>(subConverter: XdrBufferedConverter<T>, maxLength: nu
       }
 
       return result;
+    },
+
+    isValid: value => {
+      if (value.length > maxLength) {
+        return false;
+      }
+      return value.every(entry => subConverter.isValid(entry));
     }
   };
 
@@ -213,7 +268,9 @@ export function string(maxLength: number = TWO_TO_32 - 1) {
       }
 
       return readStream.readNextString(length);
-    }
+    },
+
+    isValid: value => isValidString(value, maxLength)
   };
 
   return converter;
@@ -232,7 +289,9 @@ export function FixedOpaque(length: number) {
 
     fromXdrBuffered: readStream => {
       return readStream.readNextBinaryData(length);
-    }
+    },
+
+    isValid: value => value.byteLength === length
   };
 
   return converter;
@@ -255,7 +314,9 @@ export function VarOpaque(maxLength: number = TWO_TO_32 - 1) {
       }
 
       return readStream.readNextBinaryData(length);
-    }
+    },
+
+    isValid: value => value.byteLength <= maxLength
   };
 
   return converter;

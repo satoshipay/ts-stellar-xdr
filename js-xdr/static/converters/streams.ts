@@ -184,6 +184,9 @@ export function createWriteStream() {
             dataView.setUint8(writeIndex + targetByteLength++, ((charCode >> 6) & 0x3f) | 0x80);
             dataView.setUint8(writeIndex + targetByteLength++, (charCode & 0x3f) | 0x80);
           } else {
+            if (charCode >= 0xdc00) {
+              throw new Error(`String ${value} has an improper surrogate pair at position ${sourceIndex - 1}`);
+            }
             charCode = 0x10000 + (((charCode & 0x3ff) << 10) | (value.charCodeAt(sourceIndex++) & 0x3ff));
             ensureSize(targetByteLength + 4);
             dataView.setUint8(writeIndex + targetByteLength++, (charCode >> 18) | 0xf0);
@@ -193,7 +196,7 @@ export function createWriteStream() {
           }
         } else {
           if (charCode > 127) {
-            throw new Error(`String ${value} has a non ASCII character`);
+            throw new Error(`String ${value} has a non ASCII character at position ${sourceIndex - 1}`);
           }
           ensureSize(targetByteLength + 1);
           dataView.setUint8(writeIndex + targetByteLength++, charCode);
@@ -223,4 +226,37 @@ export function createWriteStream() {
       return result;
     }
   };
+}
+
+export function isValidString(value: string, maxNoOfBytes: number) {
+  const length = value.length;
+
+  let targetByteLength = 0;
+  let sourceIndex = 0;
+  while (sourceIndex < length) {
+    let charCode = value.charCodeAt(sourceIndex++);
+
+    if (ALLOW_UTF8_STRINGS) {
+      if (charCode < 0x80) {
+        targetByteLength += 1;
+      } else if (charCode < 0x800) {
+        targetByteLength += 2;
+      } else if (sourceIndex >= length || charCode < 0xd800 || charCode >= 0xe000) {
+        targetByteLength += 3;
+      } else {
+        if (charCode >= 0xdc00) {
+          return false;
+        }
+        sourceIndex++;
+        targetByteLength += 4;
+      }
+    } else {
+      if (charCode > 127) {
+        return false;
+      }
+      targetByteLength += 1;
+    }
+  }
+
+  return targetByteLength <= maxNoOfBytes;
 }

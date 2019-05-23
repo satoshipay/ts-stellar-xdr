@@ -8,7 +8,7 @@ export function initializeOutputPath(outputPath: string) {
 }
 
 export function generateXdrDefinition(types: Record<string, TypeDefinition>, outputPath: string) {
-  let result = `import * as converter from './converters/index'`;
+  let result = `import * as converter from './converters/index'\n` + `import * as utils from './utils/index'`;
 
   let toBeDone: string[];
   if (process.env.GENERATE_TYPES) {
@@ -52,6 +52,7 @@ const staticFiles = [
   "converters/index.ts",
   "converters/streams.ts",
   "converters/types.ts",
+  "utils/index.ts",
   "utils/int64.ts"
 ];
 

@@ -4,7 +4,6 @@ import { XdrBufferedConverter, XdrConverter } from "./types";
 export * from "./basicTypes";
 export * from "./compoundTypes";
 export * from "./types";
-export * from "../utils/int64";
 
 export function generator<T>(factory: () => XdrBufferedConverter<T>): XdrConverter<T> {
   let memoizedFactoryResult: XdrBufferedConverter<T> | undefined;

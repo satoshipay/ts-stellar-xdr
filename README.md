@@ -25,16 +25,15 @@ console.log(encodedTransactionEnvelope === transactionEnvelope); // true
 ## Developers
 
 How to run locally
+
 ### Preparation
+
 ```
   npm install
-  cd js-xdr
-  npm install
-  npm run build
-  cd ..
 ```
 
 ### Build typescript XDR serializer/deserializer
+
 ```
   npm run build-complete
 ```

@@ -47,7 +47,7 @@ export const Hyper: XdrBufferedConverter<Int64> = {
     return new Int64(low32bit, high32bit);
   },
 
-  isValid: value => true
+  isValid: _ => true
 };
 
 export const Uhyper: XdrBufferedConverter<Uint64> = {
@@ -62,7 +62,7 @@ export const Uhyper: XdrBufferedConverter<Uint64> = {
     return new Uint64(low32bit, high32bit);
   },
 
-  isValid: value => true
+  isValid: _ => true
 };
 
 export const Boolean: XdrBufferedConverter<boolean> = {
@@ -82,11 +82,11 @@ export const Boolean: XdrBufferedConverter<boolean> = {
     throw new Error(`Value ${parsedInt} is not a proper Boolean value.`);
   },
 
-  isValid: value => true
+  isValid: _ => true
 };
 
 export const Void: XdrBufferedConverter<undefined> = {
   toXdrBuffered: () => {},
   fromXdrBuffered: () => undefined,
-  isValid: value => true
+  isValid: _ => true
 };

@@ -142,6 +142,8 @@ export function Union<
           } else {
             return false;
           }
+        } else {
+          return false;
         }
       } else if ("default" in value) {
         return false;
@@ -156,6 +158,8 @@ export function Union<
           } else {
             return false;
           }
+        } else {
+          return false;
         }
       }
     }

@@ -27,12 +27,12 @@ export const Hyper: XdrBufferedConverter<Int64 | number> = {
       value = Int64.fromNumber(value);
     }
     writeStream.writeNextInt32(value.high);
-    writeStream.writeNextInt32(value.low);
+    writeStream.writeNextUint32(value.low);
   },
 
   fromXdrBuffered: readStream => {
     const high32bit = readStream.readNextInt32();
-    const low32bit = readStream.readNextInt32();
+    const low32bit = readStream.readNextUint32();
     return new Int64(low32bit, high32bit);
   }
 };

@@ -1,4 +1,4 @@
-import { Int64, Uint64 } from "./int64";
+import { Int64, Uint64 } from "../utils/int64";
 import { XdrBufferedConverter } from "./types";
 
 export const Int: XdrBufferedConverter<number> = {

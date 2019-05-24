@@ -1,4 +1,4 @@
-import { Int64, Uint64 } from "../utils/int64";
+import { Integer64, UnsignedInteger64 } from "../utils/int64";
 import { XdrBufferedConverter } from "./types";
 
 const MIN_INT = -0x80000000;
@@ -35,7 +35,7 @@ export const Uint: XdrBufferedConverter<number> = {
   }
 };
 
-export const Hyper: XdrBufferedConverter<Int64> = {
+export const Hyper: XdrBufferedConverter<Integer64> = {
   toXdrBuffered: (value, writeStream) => {
     writeStream.writeNextInt32(value.high);
     writeStream.writeNextUint32(value.low);
@@ -44,13 +44,13 @@ export const Hyper: XdrBufferedConverter<Int64> = {
   fromXdrBuffered: readStream => {
     const high32bit = readStream.readNextInt32();
     const low32bit = readStream.readNextUint32();
-    return new Int64(low32bit, high32bit);
+    return new Integer64(low32bit, high32bit);
   },
 
   isValid: _ => true
 };
 
-export const Uhyper: XdrBufferedConverter<Uint64> = {
+export const Uhyper: XdrBufferedConverter<UnsignedInteger64> = {
   toXdrBuffered: (value, writeStream) => {
     writeStream.writeNextUint32(value.high);
     writeStream.writeNextUint32(value.low);
@@ -59,7 +59,7 @@ export const Uhyper: XdrBufferedConverter<Uint64> = {
   fromXdrBuffered: readStream => {
     const high32bit = readStream.readNextUint32();
     const low32bit = readStream.readNextUint32();
-    return new Uint64(low32bit, high32bit);
+    return new UnsignedInteger64(low32bit, high32bit);
   },
 
   isValid: _ => true

@@ -1,6 +1,6 @@
 {
   "name": "ts-stellar-xdr",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Decoder/Encoder of XDR types used in Stellar",
   "main": "./lib/mainTypes.js",
   "types": "./lib/mainTypes.d.ts",

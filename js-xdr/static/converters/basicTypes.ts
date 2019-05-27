@@ -37,8 +37,8 @@ export const Uint: XdrBufferedConverter<number> = {
 
 export const Hyper: XdrBufferedConverter<Integer64> = {
   toXdrBuffered: (value, writeStream) => {
-    writeStream.writeNextInt32(value.high);
-    writeStream.writeNextUint32(value.low);
+    writeStream.writeNextInt32(value.high32Bits);
+    writeStream.writeNextUint32(value.low32Bits);
   },
 
   fromXdrBuffered: readStream => {
@@ -52,8 +52,8 @@ export const Hyper: XdrBufferedConverter<Integer64> = {
 
 export const Uhyper: XdrBufferedConverter<UnsignedInteger64> = {
   toXdrBuffered: (value, writeStream) => {
-    writeStream.writeNextUint32(value.high);
-    writeStream.writeNextUint32(value.low);
+    writeStream.writeNextUint32(value.high32Bits);
+    writeStream.writeNextUint32(value.low32Bits);
   },
 
   fromXdrBuffered: readStream => {

@@ -228,7 +228,7 @@ export function config(definitionFactory: DefinitionFactory) {
 
     hyper: () => {
       return {
-        tsType: `utils.Integer64`,
+        tsType: `Integer64`,
         converter: `converter.Hyper`,
         dependencies: {}
       };
@@ -236,7 +236,7 @@ export function config(definitionFactory: DefinitionFactory) {
 
     uhyper: () => {
       return {
-        tsType: `utils.UnsignedInteger64`,
+        tsType: `UnsignedInteger64`,
         converter: `converter.Uhyper`,
         dependencies: {}
       };

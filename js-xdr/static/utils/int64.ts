@@ -1,20 +1,105 @@
 const TWO_TO_32 = 0x100000000;
 
-export class Integer64 {
-  public low: number;
-  public high: number;
+const MIN_UINT32 = 0x00000000;
+const MAX_UINT32 = 0xffffffff;
+const MIN_INT32 = -0x80000000;
+const MAX_INT32 = 0x7fffffff;
 
-  // low must be integer >= 0 and < 2**32
-  // high must be integer >= - 2**31 and < 2**31
-  // the actual value of the number is high * (2 ** 32) + low,
-  //  i.e. >= - 2 ** 63 and < 2 ** 63
-  constructor(low: number, high: number) {
-    this.low = low >>> 0;
-    this.high = high >> 0;
+function isProperNumber(n: number) {
+  return n >= Number.MIN_SAFE_INTEGER && n <= Number.MAX_SAFE_INTEGER && isFinite(n) && !isNaN(n);
+}
+
+function isProperNonnegativeNumber(n: number) {
+  return n >= 0 && n <= Number.MAX_SAFE_INTEGER && isFinite(n) && !isNaN(n);
+}
+
+class BaseInteger64 {
+  // for unsigned = false
+  //   low32Bit must be integer >= 0 and < 2**32
+  //   high32Bit must be integer >= - 2**31 and < 2**31
+  //   the actual value of the number is high32Bit * (2 ** 32) + low32Bit,
+  //     i.e. >= - 2 ** 63 and < 2 ** 63
+  // for unsigned = true
+  //   low32Bit must be integer >= 0 and < 2**32
+  //   high32Bit must be integer >= 0 and < 2**32
+  //   the actual value of the number is high32Bit * (2 ** 32) + low32Bit
+  //     i.e. >= 0 and < 2 ** 64
+  constructor(public low32Bits: number, public high32Bits: number, public unsigned: boolean) {
+    if (low32Bits >>> 0 !== low32Bits) {
+      throw new Error(`Low 32 bits (${low32Bits}) is not an integer in the range ${MIN_UINT32} ... ${MAX_UINT32}`);
+    }
+
+    if (unsigned) {
+      if (high32Bits >>> 0 !== high32Bits) {
+        throw new Error(`High 32 bits (${high32Bits}) is not an integer in the range ${MIN_UINT32} ... ${MAX_UINT32}`);
+      }
+    } else {
+      if (high32Bits >> 0 !== high32Bits) {
+        throw new Error(`High 32 bits (${high32Bits}) is not an integer in the range ${MIN_INT32} ... ${MAX_INT32}`);
+      }
+    }
+  }
+
+  isPositive() {
+    return this.high32Bits > 0 || (this.high32Bits >= 0 && this.low32Bits > 0);
+  }
+
+  isNonNegative() {
+    return this.high32Bits >= 0;
+  }
+
+  private protoNegate(): [number, number] {
+    if (this.low32Bits === MIN_UINT32) {
+      return [MIN_UINT32, -this.high32Bits];
+    } else {
+      return [MAX_UINT32 + 1 - this.low32Bits, -1 - this.high32Bits];
+    }
+  }
+
+  negate() {
+    const [low32Bits, high32Bits] = this.protoNegate();
+    return new Integer64(low32Bits, high32Bits);
+  }
+
+  abs() {
+    let low32Bits = this.low32Bits;
+    let high32Bits = this.high32Bits;
+
+    if (this.high32Bits < 0) {
+      [low32Bits, high32Bits] = this.protoNegate();
+    }
+
+    return new UnsignedInteger64(low32Bits, high32Bits);
+  }
+
+  protected protoAdd(n: number): [number, number] {
+    if (!isProperNumber(n)) {
+      throw new Error("value must be between ${Number.MIN_SAFE_INTEGER} and ${Number.MAX_SAFE_INTEGER}");
+    }
+
+    const low32Bits = this.low32Bits + n;
+    const carry = Math.floor(low32Bits / TWO_TO_32);
+    return [low32Bits >>> 0, this.high32Bits + carry];
+  }
+
+  protected protoSub(n: number): [number, number] {
+    if (!isProperNumber(n)) {
+      throw new Error("value must be between ${Number.MIN_SAFE_INTEGER} and ${Number.MAX_SAFE_INTEGER}");
+    }
+    return this.protoAdd(-n);
+  }
+}
+
+export class Integer64 extends BaseInteger64 {
+  static minValue = new Integer64(MIN_UINT32, MIN_INT32);
+  static maxValue = new Integer64(MAX_UINT32, MAX_INT32);
+
+  constructor(low32Bits: number, high32Bits: number) {
+    super(low32Bits, high32Bits, false);
   }
 
   static fromNumber(n: number) {
-    if (n < Number.MIN_SAFE_INTEGER || n > Number.MAX_SAFE_INTEGER || !isFinite(n) || isNaN(n)) {
+    if (!isProperNumber(n)) {
       throw new Error("value must be between ${Number.MIN_SAFE_INTEGER} and ${Number.MAX_SAFE_INTEGER}");
     }
 
@@ -22,102 +107,57 @@ export class Integer64 {
   }
 
   static fromString(numberString: string) {
-    const { negate, base256 } = parseNumberString(numberString);
-    const base4M = base256ToBase4M(base256);
+    const { negate, base4M } = parseNumberString(numberString);
     if (negate) {
       return new UnsignedInteger64(base4M[1], base4M[0]).negate();
     }
-
-    if (base4M[0] > 0x7fffffff) {
-      throw new Error("Number too large");
-    }
-
     return new this(base4M[1], base4M[0]);
   }
 
-  static minValue = new Integer64(0x00000000, -0x80000000);
-  static maxValue = new Integer64(0xffffffff, 0x7fffffff);
-
-  isPositive() {
-    return this.high > 0 || (this.high >= 0 && this.low > 0);
-  }
-
-  isNonNegative() {
-    return this.high >= 0;
-  }
-
-  negate() {
-    if (this.high === -0x80000000 && this.low === 0x00000000) {
-      throw new Error(`Negation would overflow number`);
-    }
-
-    const [low, high] = negate(this.low, this.high);
-    return new Integer64(low, high);
-  }
-
-  abs() {
-    let low = this.low;
-    let high = this.high;
-
-    if (high < 0) {
-      [low, high] = negate(this.low, this.high);
-    }
-
-    return new UnsignedInteger64(low, high);
-  }
-
   toString() {
-    return `${this.high >= 0 ? "" : "-"}${this.abs().toString()}`;
+    return `${this.high32Bits >= 0 ? "" : "-"}${this.abs().toString()}`;
+  }
+
+  add(n: number) {
+    const [low32Bits, high32Bits] = super.protoAdd(n);
+    return new Integer64(low32Bits, high32Bits);
+  }
+
+  sub(n: number) {
+    const [low32Bits, high32Bits] = super.protoSub(n);
+    return new Integer64(low32Bits, high32Bits);
   }
 }
 
-export class UnsignedInteger64 {
-  public low: number;
-  public high: number;
+export class UnsignedInteger64 extends BaseInteger64 {
+  static minValue = new UnsignedInteger64(MIN_UINT32, MIN_UINT32);
+  static maxValue = new UnsignedInteger64(MAX_UINT32, MAX_UINT32);
 
-  // low must be integer >= 0 and < 2**32
-  // high must be integer >= 0 and < 2**32
-  // the actual value of the number is high * (2 ** 32) + low
-  //  i.e. >= 0 and < 2 ** 64
-  constructor(low: number, high: number) {
-    this.low = low >>> 0;
-    this.high = high >>> 0;
+  constructor(low32Bits: number, high32Bits: number) {
+    super(low32Bits, high32Bits, true);
   }
 
   static fromNumber(n: number) {
-    if (n < 0 || n > Number.MAX_SAFE_INTEGER || !isFinite(n) || isNaN(n)) {
+    if (!isProperNonnegativeNumber(n)) {
       throw new Error("value must be between ${0} and ${Number.MAX_SAFE_INTEGER}");
     }
     return new this(n >>> 0, Math.floor(n / TWO_TO_32));
   }
 
   static fromString(numberString: string) {
-    const { negate, base256 } = parseNumberString(numberString);
+    const { negate, base4M } = parseNumberString(numberString);
     if (negate) {
       throw new Error("Negative numbers not allowed");
     }
-    const base4M = base256ToBase4M(base256);
     return new this(base4M[1], base4M[0]);
   }
 
-  static minValue = new UnsignedInteger64(0x00000000, 0x00000000);
-  static maxValue = new UnsignedInteger64(0xffffffff, 0xffffffff);
-
-  isPositive() {
-    return this.high > 0 || this.low > 0;
-  }
-
-  negate() {
-    if (this.high > 0x80000000 || (this.high >= 0x80000000 && this.low > 0)) {
-      throw new Error(`Negation would underflow number`);
-    }
-
-    const [low, high] = negate(this.low, this.high);
-    return new Integer64(low, high);
-  }
-
   toString() {
-    const digits = toBaseOut([this.high >>> 16, this.high & 0xffff, this.low >>> 16, this.low & 0xffff], 0x10000, 10);
+    const digits = convertBases(
+      [this.high32Bits >>> 16, this.high32Bits & 0xffff, this.low32Bits >>> 16, this.low32Bits & 0xffff],
+      0x10000,
+      10
+    );
 
     const length = digits.length;
     const noOfTriplets = Math.ceil(length / 3);
@@ -133,18 +173,16 @@ export class UnsignedInteger64 {
 
     return triplets.join(",");
   }
-}
 
-function negate(low: number, high: number): [number, number] {
-  let newLow = (~low >>> 0) + 1;
-  let newHigh = ~high >> 0;
-
-  if (newLow >= 0x100000000) {
-    newLow = newLow >>> 0;
-    newHigh++;
+  add(n: number) {
+    const [low32Bits, high32Bits] = super.protoAdd(n);
+    return new UnsignedInteger64(low32Bits, high32Bits);
   }
 
-  return [newLow, newHigh];
+  sub(n: number) {
+    const [low32Bits, high32Bits] = super.protoSub(n);
+    return new UnsignedInteger64(low32Bits, high32Bits);
+  }
 }
 
 function base256ToBase4M(base256: number[]) {
@@ -200,13 +238,15 @@ function parseNumberString(numberString: string) {
     return digitValue;
   });
 
+  const base256 = convertBases(digits, base, 256);
+
   return {
     negate: match[1] === "-",
-    base256: toBaseOut(digits, base, 256)
+    base4M: base256ToBase4M(base256)
   };
 }
 
-function toBaseOut(digits: number[], baseIn: number, baseOut: number) {
+function convertBases(digits: number[], baseIn: number, baseOut: number) {
   const resultArray = [0];
   const length = digits.length;
 

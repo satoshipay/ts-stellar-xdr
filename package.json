@@ -1,6 +1,6 @@
 {
   "name": "ts-stellar-xdr",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Decoder/Encoder of XDR types used in Stellar",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -9,7 +9,7 @@
     "download-x": "cd x2JavaScript && ./generate && cd ..",
     "babel": "rimraf x2JavaScript/commonjs && babel x2JavaScript/generated --out-dir x2JavaScript/commonjs",
     "generate": "rimraf generated && npm run generate-transaction-types && npm run generate-all-types",
-    "generate-transaction-types": "DESTINATION=./generated MAIN_FILE_NAME=mainTypes.ts GENERATE_TYPES=TransactionEnvelope,TransactionResult,TransactionMeta node x2JavaScript/commonjs/stellar-xdr_generated.js",
+    "generate-transaction-types": "DESTINATION=./generated MAIN_FILE_NAME=mainTypes.ts GENERATE_TYPES=TransactionEnvelope,TransactionResult,TransactionMeta,EnvelopeType node x2JavaScript/commonjs/stellar-xdr_generated.js",
     "generate-all-types": "DESTINATION=./generated MAIN_FILE_NAME=allTypes.ts node x2JavaScript/commonjs/stellar-xdr_generated.js",
     "build-complete": "npm run download-x && npm run babel && npm run build-js-xdr && npm run generate && npm run prettier && npm run build",
     "build-js-xdr": "cd js-xdr && npm install && npm run build && cd ..",
@@ -17,7 +17,7 @@
     "build": "rimraf lib && tsc --declaration",
     "prepublishOnly": "npm run build-complete"
   },
-  "author": "SatoshiPay Ltd.",
+  "author": "SatoshiPay Ltd",
   "license": "Apache-2.0",
   "dependencies": {},
   "devDependencies": {

@@ -86,6 +86,10 @@ class BaseInteger64 {
     return this.high32Bits * TWO_TO_32 + this.low32Bits;
   }
 
+  equals(other: BaseInteger64) {
+    return this.high32Bits === other.high32Bits && this.low32Bits === other.low32Bits;
+  }
+
   protected protoAdd(n: number): [number, number] {
     if (!isProperNumber(n)) {
       throw new Error("value must be between ${Number.MIN_SAFE_INTEGER} and ${Number.MAX_SAFE_INTEGER}");

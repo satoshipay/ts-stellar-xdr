@@ -8,9 +8,7 @@ export function initializeOutputPath(outputPath: string) {
 }
 
 export function generateXdrDefinition(types: Record<string, TypeDefinition>, outputPath: string) {
-  let result =
-    `import * as converter from './converters/index'\n` +
-    `import { Integer64, UnsignedInteger64 } from './utils/int64'`;
+  let result = `import * as converter from './converters/index'\n` + `import * as int64 from './utils/int64'`;
 
   let toBeDone: string[];
   if (process.env.GENERATE_TYPES) {

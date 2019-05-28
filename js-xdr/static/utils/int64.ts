@@ -58,7 +58,7 @@ class BaseInteger64 {
 
   negate() {
     const [low32Bits, high32Bits] = this.protoNegate();
-    return new Integer64(low32Bits, high32Bits);
+    return new Signed(low32Bits, high32Bits);
   }
 
   abs() {
@@ -69,7 +69,7 @@ class BaseInteger64 {
       [low32Bits, high32Bits] = this.protoNegate();
     }
 
-    return new UnsignedInteger64(low32Bits, high32Bits);
+    return new Unsigned(low32Bits, high32Bits);
   }
 
   protected protoAdd(n: number): [number, number] {
@@ -90,9 +90,9 @@ class BaseInteger64 {
   }
 }
 
-export class Integer64 extends BaseInteger64 {
-  static minValue = new Integer64(MIN_UINT32, MIN_INT32);
-  static maxValue = new Integer64(MAX_UINT32, MAX_INT32);
+export class Signed extends BaseInteger64 {
+  static minValue = new Signed(MIN_UINT32, MIN_INT32);
+  static maxValue = new Signed(MAX_UINT32, MAX_INT32);
 
   constructor(low32Bits: number, high32Bits: number) {
     super(low32Bits, high32Bits, false);
@@ -109,7 +109,7 @@ export class Integer64 extends BaseInteger64 {
   static fromString(numberString: string) {
     const { negate, base4M } = parseNumberString(numberString);
     if (negate) {
-      return new UnsignedInteger64(base4M[1], base4M[0]).negate();
+      return new Unsigned(base4M[1], base4M[0]).negate();
     }
     return new this(base4M[1], base4M[0]);
   }
@@ -120,18 +120,18 @@ export class Integer64 extends BaseInteger64 {
 
   add(n: number) {
     const [low32Bits, high32Bits] = super.protoAdd(n);
-    return new Integer64(low32Bits, high32Bits);
+    return new Signed(low32Bits, high32Bits);
   }
 
   sub(n: number) {
     const [low32Bits, high32Bits] = super.protoSub(n);
-    return new Integer64(low32Bits, high32Bits);
+    return new Signed(low32Bits, high32Bits);
   }
 }
 
-export class UnsignedInteger64 extends BaseInteger64 {
-  static minValue = new UnsignedInteger64(MIN_UINT32, MIN_UINT32);
-  static maxValue = new UnsignedInteger64(MAX_UINT32, MAX_UINT32);
+export class Unsigned extends BaseInteger64 {
+  static minValue = new Unsigned(MIN_UINT32, MIN_UINT32);
+  static maxValue = new Unsigned(MAX_UINT32, MAX_UINT32);
 
   constructor(low32Bits: number, high32Bits: number) {
     super(low32Bits, high32Bits, true);
@@ -176,12 +176,12 @@ export class UnsignedInteger64 extends BaseInteger64 {
 
   add(n: number) {
     const [low32Bits, high32Bits] = super.protoAdd(n);
-    return new UnsignedInteger64(low32Bits, high32Bits);
+    return new Unsigned(low32Bits, high32Bits);
   }
 
   sub(n: number) {
     const [low32Bits, high32Bits] = super.protoSub(n);
-    return new UnsignedInteger64(low32Bits, high32Bits);
+    return new Unsigned(low32Bits, high32Bits);
   }
 }
 

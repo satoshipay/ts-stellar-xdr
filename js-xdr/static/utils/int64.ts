@@ -72,6 +72,20 @@ class BaseInteger64 {
     return new Unsigned(low32Bits, high32Bits);
   }
 
+  toNumber() {
+    // is this number larger than or equal to 2**21 * 2**32 = 2**53 (i.e, larger than Number.MAX_SAFE_INTEGER)?
+    if (this.high32Bits >= 0x200000) {
+      throw new Error("Number to large to represent as safe integer");
+    }
+
+    // is this number smaller than or equal to -(2**21) * 2**32 = -(2**53) (i.e, smaller than Number.MIN_SAFE_INTEGER)?
+    if (this.high32Bits < -0x200000 || (this.high32Bits === -0x200000 && this.low32Bits === 0)) {
+      throw new Error("Number to small to represent as safe integer");
+    }
+
+    return this.high32Bits * TWO_TO_32 + this.low32Bits;
+  }
+
   protected protoAdd(n: number): [number, number] {
     if (!isProperNumber(n)) {
       throw new Error("value must be between ${Number.MIN_SAFE_INTEGER} and ${Number.MAX_SAFE_INTEGER}");

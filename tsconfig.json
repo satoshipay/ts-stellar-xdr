@@ -4,7 +4,7 @@
     "allowJs": false,
     "lib": ["es2018", "dom"],
     "module": "commonjs",
-    "target": "ES6",
+    "target": "ES5",
     "strict": true,
     "sourceMap": false,
     "esModuleInterop": true,

@@ -2,22 +2,13 @@
   "name": "js-xdr",
   "version": "0.1.0",
   "description": "",
-  "main": "dist/src/index.js",
+  "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rimraf dist && tsc",
     "prettier": "prettier --write static/*.ts && prettier --write src/*.ts"
   },
   "author": "SatoshiPay Ltd.",
   "license": "Apache-2.0",
-  "devDependencies": {
-    "@types/node": "^10.12.12",
-    "prettier": "^1.15.3",
-    "rimraf": "^2.6.2",
-    "tslint": "^5.11.0",
-    "tslint-config-prettier": "^1.17.0",
-    "typescript": "^3.2.2"
-  },
   "prettier": {
     "printWidth": 120,
     "tabWidth": 2

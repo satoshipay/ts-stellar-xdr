@@ -67,6 +67,6 @@ export function copyStaticFiles(outputPath: string) {
       mkdirSync(join(outputPath, directory), { recursive: true });
     }
 
-    copyFileSync(join(__dirname, "../../static/", fileName), join(outputPath, fileName));
+    copyFileSync(join(__dirname, "../static/", fileName), join(outputPath, fileName));
   });
 }

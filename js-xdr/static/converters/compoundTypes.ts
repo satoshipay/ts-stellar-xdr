@@ -68,12 +68,15 @@ type C<T, U> = { [P in U & keyof T]: T[P] extends undefined ? { type: P } : neve
 type CC<T, U> = { [P in U & keyof T]: T[P] extends XdrBufferedConverter<infer A> ? { type: P; value: A } : never }[U &
   keyof T];
 
+  type CCC<T, U> = { [P in U & keyof T]: T[P] extends XdrBufferedConverter<infer A | undefined> ? { type: P; value?: A } : never }[U &
+    keyof T];
+
 export function Union<
   U extends number | string,
   T extends Record<string | number, undefined | XdrBufferedConverter<any>>,
   V extends undefined | { default: undefined | XdrBufferedConverter<any> }
 >(name: string, switchOn: XdrBufferedConverter<U>, structDefinition: T, defaultConverter: V) {
-  const converter: XdrBufferedConverter<A<V> | AA<V> | C<T, U> | CC<T, U>> = {
+  const converter: XdrBufferedConverter<A<V> | AA<V> | C<T, U> | CC<T, U> | CCC<T, U>> = {
     toXdrBuffered: (value, writeStream) => {
       if (defaultConverter !== undefined && "default" in value) {
         Int.toXdrBuffered(value.default, writeStream);

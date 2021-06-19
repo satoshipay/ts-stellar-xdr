@@ -1,6 +1,6 @@
 {
   "name": "ts-stellar-xdr",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Decoder/Encoder of XDR types used in Stellar",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -8,7 +8,7 @@
     "test": "node test/test",
     "download-x": "cd x2JavaScript && ./generate && cd ..",
     "generate": "rimraf generated && npm run generate-transaction-types && npm run generate-all-types",
-    "generate-transaction-types": "DESTINATION=./generated MAIN_FILE_NAME=mainTypes.ts GENERATE_TYPES=TransactionEnvelope,TransactionResult,TransactionMeta,EnvelopeType npx ts-node -T x2JavaScript/generated/stellar-xdr_generated.ts",
+    "generate-transaction-types": "DESTINATION=./generated MAIN_FILE_NAME=mainTypes.ts GENERATE_TYPES=TransactionEnvelope,TransactionResult,TransactionMeta,EnvelopeType,TransactionSignaturePayload npx ts-node -T x2JavaScript/generated/stellar-xdr_generated.ts",
     "generate-all-types": "DESTINATION=./generated MAIN_FILE_NAME=allTypes.ts npx ts-node -T x2JavaScript/generated/stellar-xdr_generated.ts",
     "build-complete": "npm run download-x && npm run generate && npm run prettier && npm run build",
     "prettier": "prettier --write \"./generated/**/*.ts\"",
